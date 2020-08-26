@@ -35,7 +35,7 @@ public class MyKafkaProducer {
 
             @Override
             public void onFailure(Throwable ex) {
-                log.error("Unable to send data=[{}] due to: {}", data, ex.getMessage());
+                log.error("Unable to send data {} due to: {}", data, ex.getMessage());
             }
         });
     }

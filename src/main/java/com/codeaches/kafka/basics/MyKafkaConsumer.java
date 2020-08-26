@@ -12,6 +12,6 @@ public class MyKafkaConsumer {
 
     @KafkaListener(topics = "${my.kafka.consumer.topic}")
     public void listen(ConsumerRecord<String, String> kafkaMessage) {
-        log.info(String.format("Received data     = %s", kafkaMessage.value()));
+        log.info("Received data {}", kafkaMessage.value());
     }
 }
