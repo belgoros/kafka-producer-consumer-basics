@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
@@ -30,8 +31,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@EmbeddedKafka
+@EmbeddedKafka(topics = "device",
+        bootstrapServersProperty = "spring.kafka.producer.bootstrap-servers")
 @ExtendWith(SpringExtension.class)
+@SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MyKafkaProducerTest {
 
@@ -39,6 +42,9 @@ class MyKafkaProducerTest {
 
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
+
+    @Autowired
+    private MyKafkaProducer myKafkaProducer;
 
     BlockingQueue<ConsumerRecord<String, String>> records;
 
@@ -76,5 +82,11 @@ class MyKafkaProducerTest {
         assertThat(singleRecord).isNotNull();
         assertThat(singleRecord.key()).isEqualTo("my-aggregate-id");
         assertThat(singleRecord.value()).isEqualTo("{\"event\":\"Test Event\"}");
+    }
+
+    @Test
+    public void testProducer() {
+        assertThat(myKafkaProducer).isNotNull();
+        myKafkaProducer.sendDataToKafka("Hello D-1");//=> console logs displays "Sent data Hello D-1"
     }
 }
