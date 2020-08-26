@@ -12,7 +12,7 @@ spring:
 my:
   kafka:
     producer:
-      topic: My-Test-Topic
+      topic: device
     consumer:
-      topic: My-Test-Topic
+      topic: device
 
