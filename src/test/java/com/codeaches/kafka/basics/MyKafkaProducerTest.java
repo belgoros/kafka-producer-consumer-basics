@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -31,14 +32,15 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@EmbeddedKafka(topics = "device",
+@EmbeddedKafka(topics = "${my.kafka.producer.topic}",
         bootstrapServersProperty = "spring.kafka.producer.bootstrap-servers")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MyKafkaProducerTest {
 
-    private static final String TOPIC = "device";
+    @Value("${my.kafka.producer.topic}")
+    private String topic;
 
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
@@ -54,7 +56,7 @@ class MyKafkaProducerTest {
     void setUp() {
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.consumerProps("consumer", "false", embeddedKafkaBroker));
         DefaultKafkaConsumerFactory<String, String> consumerFactory = new DefaultKafkaConsumerFactory<>(configs, new StringDeserializer(), new StringDeserializer());
-        ContainerProperties containerProperties = new ContainerProperties(TOPIC);
+        ContainerProperties containerProperties = new ContainerProperties(topic);
         container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
         records = new LinkedBlockingQueue<>();
         container.setupMessageListener((MessageListener<String, String>) records::add);
@@ -74,7 +76,7 @@ class MyKafkaProducerTest {
         Producer<String, String> producer = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new StringSerializer()).createProducer();
 
         // Act
-        producer.send(new ProducerRecord<>(TOPIC, "my-aggregate-id", "{\"event\":\"Test Event\"}"));
+        producer.send(new ProducerRecord<>(topic, "my-aggregate-id", "{\"event\":\"Test Event\"}"));
         producer.flush();
 
         // Assert
