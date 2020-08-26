@@ -90,7 +90,7 @@ class MyKafkaProducerTest {
     public void testProducer() throws InterruptedException {
         assertThat(myKafkaProducer).isNotNull();
         myKafkaProducer.sendDataToKafka("Hello D-1");//=> console logs displays "Sent data Hello D-1"
-        ConsumerRecord<String, String> singleRecord = records.poll(5000, TimeUnit.MILLISECONDS);
+        ConsumerRecord<String, String> singleRecord = records.poll(100, TimeUnit.MILLISECONDS);
         assertThat(singleRecord).isNotNull();
         assertThat(singleRecord.value()).isEqualTo("Hello D-1");
     }
