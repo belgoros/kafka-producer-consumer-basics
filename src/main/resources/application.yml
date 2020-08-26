@@ -1,0 +1,18 @@
+server:
+  port: 9090
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: My-Consumer-Group
+    listener:
+      missing-topics-fatal: false
+my:
+  kafka:
+    producer:
+      topic: My-Test-Topic
+    consumer:
+      topic: My-Test-Topic
+
